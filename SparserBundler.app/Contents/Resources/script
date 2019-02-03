@@ -1,0 +1,25 @@
+#!/bin/sh
+
+if $1=""
+then
+  echo "Drag disk images over this window "
+  echo "to compact them in 2MB slices."
+  echo "The image will be replaced in-place"
+  echo "with the name of the original file,"
+  echo "and the original will be moved to the trash."
+  echo ""
+  echo "To compact the image further, erase free space"
+  echo "with 0s in the guest OS environment"
+  echo "prior to dropping it on SparserBundler.  "
+  echo "Ensure the image is unmounted prior to compaction."
+else
+  echo "Compacting and converting"
+  echo $1
+  echo "into a 2MB-slice sparsebundle image."
+  echo ""
+  hdiutil convert "$1" -format UDSB -tgtimagekey sparse-band-size=2048 -o "$1.temp"
+  mv "$1" ~/.Trash/
+  echo "Replacing original disk image in-place...."
+  mv "$1.temp.sparsebundle" "$1"
+  echo "You can find the original in the trash."
+fi
